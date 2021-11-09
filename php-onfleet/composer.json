@@ -1,0 +1,15 @@
+{
+    "name": "onfleet/php-onfleet",
+    "autoload": {
+        "psr-4": {
+            "Onfleet\\": "src"
+        }
+    },
+    "authors": [
+        {
+            "name": "Victoria Denysova",
+            "email": "victoria@onfleet.com"
+        }
+    ],
+    "require": {}
+}
