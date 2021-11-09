@@ -11,9 +11,7 @@ $config = json_decode($config, true);
 $client = new CurlClient($config["apiKey"]);
 $task = new Task($client);
 
-if ($client->testAuth()) {
-    echo "here";
-}
+
 
 
 
