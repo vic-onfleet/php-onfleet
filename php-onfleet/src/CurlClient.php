@@ -4,62 +4,81 @@ namespace Onfleet;
 
 class CurlClient
 {
-    const DEFAULT_URL = 'https://onfleet.com';
-    const DEFAULT_PATH = '/api';
-    const DEFAULT_API_VERSION = 'v2';
-    const DEFAULT_TIMEOUT = 70000;
-
-    protected $key;
-    public $client;
-    public $url = "";
-
-    public function __construct($key) {
-
-        if (!isset($key)) {
-            //exception
-        }
-        $this->url = self::DEFAULT_URL . self::DEFAULT_PATH. "/". self::DEFAULT_API_VERSION;
-        $this->client = curl_init();
-        $this->key = $key ."11";
-        curl_setopt($this->client, CURLOPT_USERPWD, $this->key . ":");
-        curl_setopt($this->client, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($this->client, CURLOPT_CONNECTTIMEOUT, self::DEFAULT_TIMEOUT);
-        curl_setopt($this->client, CURLOPT_SSL_VERIFYHOST, 1);
-        curl_setopt($this->client, CURLOPT_SSL_VERIFYPEER, 1);
-
-    }
-
-    // not complete
-    public function request($url, $params, $headers) {
-        if (!empty($headers)) {
-            curl_setopt($this->client, CURLOPT_HTTPHEADER, $headers);
-        }
-        if (!empty($params)) {
-
-            curl_setopt($this->client, CURLOPT_POST, 1);
-            curl_setopt($this->client, CURLOPT_POSTFIELDS, $params);
-        }
-        curl_setopt($this->client, CURLOPT_URL, $this->url);
-        $result = curl_exec($this->client);
-
-    }
-
-    public function testAuth(): bool
+    /**
+     * Authentication checker
+     * @param string $url Onfleet API URLl
+     * @param string $key Onfleet API Key
+     * @return boolean
+     */
+    public function authenticate(string $baseUrl, string $key): bool
     {
-        $this->url .= "/auth/test";
-        curl_setopt($this->client, CURLOPT_URL, $this->url);
-        curl_exec($this->client);
-
-        $statusCode = curl_getinfo($this->client, CURLINFO_HTTP_CODE);
-
-        if ($statusCode == 200) {
-            return true;
-        }
-
-        return false;
+        $result = $this->execute(
+            "{$baseUrl}/auth/test",
+            'GET',
+            ['Authorization: Basic ' . base64_encode("{$key}:")]
+        );
+        return $result['code'] == 200;
     }
 
-    public function __destruct() {
-        curl_close($this->client);
+    /**
+     * Calls an HTTP API and returns the data given
+     *
+     * @param string $url API URL
+     * @param string $method Method to be used in the request
+     * @param array $headers Request headers
+     * @param array $params Params to be sent
+     * @param int|null $timeOut Max execution time
+     * @return array
+     */
+    public function execute(
+        string $url,
+        string $method = 'GET',
+        array $headers = [],
+        array $params = [],
+        int $timeOut = 0
+    ): array {
+        $this->_client = curl_init();
+        curl_setopt($this->_client, CURLOPT_URL, $url);
+
+        // Default configuration
+        curl_setopt($this->_client, CURLOPT_SSL_VERIFYHOST, 1);
+        curl_setopt($this->_client, CURLOPT_SSL_VERIFYPEER, 1);
+        curl_setopt($this->_client, CURLOPT_RETURNTRANSFER, 1);
+
+        if (is_int($timeOut) && $timeOut > 0) {
+            curl_setopt($this->_client, CURLOPT_TIMEOUT, 1);
+        }
+
+        if ($headers) {
+            curl_setopt($this->_client, CURLOPT_HTTPHEADER, $headers);
+        }
+
+        if ($method === 'POST') {
+            curl_setopt($this->_client, CURLOPT_POST, 1);
+        } else if (in_array($method, ['PUT', 'PATCH', 'DELETE'])) {
+            curl_setopt($this->_client, CURLOPT_CUSTOMREQUEST, $method);
+        }
+
+        if (!empty($params) && in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'])) {
+            if ($params) curl_setopt($this->_client, CURLOPT_POSTFIELDS, json_encode($params));
+        }
+
+        $result = curl_exec($this->_client);
+        if ($result === false) {
+            throw new \Exception("Connection couldn't be established.");
+        }
+
+        $httpCode = curl_getinfo($this->_client, CURLINFO_HTTP_CODE);
+        $success = ($httpCode >= 200 && $httpCode < 300);
+        $result = json_decode($result, true);
+        $response = [
+            'success' => $success,
+            'code' => curl_getinfo($this->_client, CURLINFO_HTTP_CODE),
+            'data' => $success ? $result : null,
+            'error' => !$success ? $result : null,
+        ];
+
+        curl_close($this->_client);
+        return $response;
     }
 }

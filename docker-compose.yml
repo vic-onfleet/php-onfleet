@@ -1,0 +1,8 @@
+version: "3.7"
+services:
+  php:
+    image: php:7.4-cli
+    container_name: php
+    working_dir: /usr/src/myapp
+    volumes:
+      - $PWD/php-onfleet:/usr/src/myapp
