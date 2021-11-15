@@ -1,17 +1,15 @@
 <?php
 require 'vendor/autoload.php';
 
-use \Onfleet\CurlClient;
-use \Onfleet\Task;
+use Onfleet\Onfleet;
 
 
-$config = file_get_contents("config.json");
-$config = json_decode($config, true);
+$config = json_decode(file_get_contents("config.json"), false);
 
-$client = new CurlClient($config["apiKey"]);
-$task = new Task($client);
+$onfleet = new Onfleet($config->apiKey, 70000, null);
+// $client = new CurlClient();
+// $task = new Task($client);
+var_dump($onfleet->verifyKey());
+var_dump($onfleet->teams->get("60lbjcwT~rSeZXl~R9HtuBxP"));
 
-
-
-
-
+// var_dump($client->authenticate("https://onfleet.com/api/v2", $config->apiKey));
