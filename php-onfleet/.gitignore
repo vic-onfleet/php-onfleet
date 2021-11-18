@@ -668,4 +668,4 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux,windows,phpunit,visualstudio,webstorm+all,phpstorm+all,netbeans,sublimetext
 
 ./config.json
-
+vendor
