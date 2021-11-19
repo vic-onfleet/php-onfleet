@@ -128,7 +128,7 @@ class Methods
 
 		$result = $api->api->client->execute($url, $method, $api->api->headers, ($hasBody ? $body : []), $timeoutInMilliseconds);
 
-		if ($result['success']) return $result['data'];
+		if ($result['success']) return $method === 'DELETE' ? $result["code"] : $result['data'];
 
 		$errorCode = $result['error']['message']['error'];
 		$errorInfo = [
