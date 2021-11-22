@@ -48,9 +48,10 @@ class Resources
 	 */
 	public function __call($name, $arguments)
 	{
-		try {
+		$call_name = $name;
+		if (is_callable($this->{$name}, true, $call_name)) {
 			return call_user_func($this->{$name}, $arguments);
-		} catch (\Exception $error) {
+		} else {
 			$className = get_class($this);
 			throw new \Exception("Method {$name} doesn't exist in {$className} class.");
 		}
