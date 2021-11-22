@@ -46,7 +46,7 @@ class CurlClient
 		curl_setopt($this->_client, CURLOPT_RETURNTRANSFER, 1);
 
 		if (is_int($timeOut) && $timeOut > 0) {
-			curl_setopt($this->_client, CURLOPT_TIMEOUT, 1);
+			curl_setopt($this->_client, CURLOPT_TIMEOUT, $timeOut);
 		}
 
 		if ($headers) {
