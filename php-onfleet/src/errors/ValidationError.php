@@ -4,14 +4,14 @@ namespace Onfleet\errors;
 
 class ValidationError extends \Exception
 {
-    private $_name = 'ValidationError';
-    protected $message = 'Unknown exceiption';
+	private $_name = 'ValidationError';
+	protected $message = 'Unknown exceiption';
 
-    public function __construct($message = null)
-    {
-        if (!$message) {
-            throw new $this('Unknown ' . get_class($this));
-        }
-        parent::__construct("{$this->_name}: $message");
-    }
+	public function __construct($message = null)
+	{
+		if (!$message) {
+			throw new $this('Unknown ' . get_class($this));
+		}
+		parent::__construct("{$this->_name}: $message");
+	}
 }

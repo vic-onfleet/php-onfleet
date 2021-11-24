@@ -6,16 +6,16 @@ use Onfleet\Resources\Resources;
 
 class Webhooks extends Resources
 {
-    protected $_endpoints = [];
+	protected $_endpoints = [];
 
-    public function __construct($api)
-    {
-        parent::__construct($api);
-        $this->defineTimeout();
-        $this->endpoints([
-            'create' => [ 'path' => '/webhooks', 'method' => 'POST' ],
-            'get' => [ 'path' => '/webhooks', 'method' => 'GET' ],
-            'deleteOne' => [ 'path' => '/webhooks/:webhookId','method' => 'DELETE' ],
-        ]);
-    }
+	public function __construct($api)
+	{
+		parent::__construct($api);
+		$this->defineTimeout();
+		$this->endpoints([
+			'create' => ['path' => '/webhooks', 'method' => 'POST'],
+			'get' => ['path' => '/webhooks', 'method' => 'GET'],
+			'deleteOne' => ['path' => '/webhooks/:webhookId', 'method' => 'DELETE'],
+		]);
+	}
 }
